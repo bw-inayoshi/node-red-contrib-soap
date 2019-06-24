@@ -14,6 +14,7 @@ module.exports = function (RED) {
         try {
             node.on('input', function (msg) {
                 var server = (msg.server)?{wsdl:msg.server, auth:0}:node.server;
+                var method = msg.method || n.method;
                 var lastFiveChar = server.wsdl.substr(server.wsdl.length-5);
                 if(server.wsdl.indexOf("://")>0 && lastFiveChar !== '?wsdl'){
                     server.wsdl += '?wsdl';
@@ -43,8 +44,8 @@ module.exports = function (RED) {
                         client.addSoapHeader(msg.headers);
                     }
 
-                    if(client.hasOwnProperty(node.method)){
-                        client[node.method](msg.payload, function (err, result) {
+                    if(client.hasOwnProperty(method)){
+                        client[method](msg.payload, function (err, result) {
                             if (err) {
                                 node.status({fill: "red", shape: "dot", text: "Service Call Error: " + err});
                                 node.error("Service Call Error: " + err);
